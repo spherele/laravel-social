@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@media (max-width: 768px){
+    .custom-gap {
+        gap: 10px;
+    }
+
+    .custom-full-width {
+        width: 100%;
+        text-align: center;
+    }
+
+    .custom-90-width {
+        width: 90%;
+        border-radius: 0.5rem;
+    }
+
+    .custom-90-height {
+        min-height: 90vh;
+    }
+}
+
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(213, 213, 213, 0.54);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1f2937;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1f2937;
+}
