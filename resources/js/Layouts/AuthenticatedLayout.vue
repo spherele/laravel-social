@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -9,12 +9,21 @@ import { Link } from '@inertiajs/vue3';
 import ScrollToTop from "@/Components/UI/ScrollToTop.vue";
 
 const showingNavigationDropdown = ref(false);
+
+watch(showingNavigationDropdown, (newValue) => {
+    if (newValue) {
+        document.body.style.overflow = 'hidden';
+    } else {
+
+        document.body.style.overflow = '';
+    }
+});
 </script>
 
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <nav class="bg-white border-b border-gray-100">
+            <nav class="bg-white border-b border-gray-100 sticky top-0" style="z-index: 49">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -117,40 +126,53 @@ const showingNavigationDropdown = ref(false);
                     </div>
                 </div>
 
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
-                    class="sm:hidden"
-                >
-                    <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('profile.index')" :active="route().current('profile.index')">
-                            Profile
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('news')" :active="route().current('news')">
-                            News
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('friends.index')" :active="route().current('friends.index')">
-                            Friends
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('chats.index')" :active="route().current('chats.index')">
-                            Chats
-                        </ResponsiveNavLink>
-                    </div>
+                <div>
+                    <!-- Затемненный фон с анимацией -->
+                    <div
+                        v-if="showingNavigationDropdown"
+                        class="fixed inset-0 bg-black bg-opacity-50 z-49 transition-opacity duration-300"
+                        :class="{ 'opacity-0': !showingNavigationDropdown, 'opacity-100': showingNavigationDropdown }"
+                        @click="showingNavigationDropdown = false"
+                    ></div>
 
-                    <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200">
-                        <div class="px-4">
-                            <div class="font-medium text-base text-gray-800">
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
+                    <!-- Мобильное меню с анимацией -->
+                    <div
+                        :class="{
+                'translate-x-0': showingNavigationDropdown,
+                'translate-x-full': !showingNavigationDropdown,
+            }"
+                        class="sm:hidden fixed inset-y-0 right-0 w-64 bg-white z-50 overflow-y-auto transition-transform duration-300"
+                    >
+                        <div class="pt-2 pb-3 space-y-1">
+                            <ResponsiveNavLink :href="route('profile.index')" :active="route().current('profile.index')">
+                                Profile
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('news')" :active="route().current('news')">
+                                News
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('friends.index')" :active="route().current('friends.index')">
+                                Friends
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('chats.index')" :active="route().current('chats.index')">
+                                Chats
+                            </ResponsiveNavLink>
                         </div>
 
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Settings </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
-                                Log Out
-                            </ResponsiveNavLink>
+                        <!-- Responsive Settings Options -->
+                        <div class="pt-4 pb-1 border-t border-gray-200">
+                            <div class="px-4">
+                                <div class="font-medium text-base text-gray-800">
+                                    {{ $page.props.auth.user.name }}
+                                </div>
+                                <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
+                            </div>
+
+                            <div class="mt-3 space-y-1">
+                                <ResponsiveNavLink :href="route('profile.edit')"> Settings </ResponsiveNavLink>
+                                <ResponsiveNavLink :href="route('logout')" method="post" as="button">
+                                    Log Out
+                                </ResponsiveNavLink>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -24,9 +24,7 @@ const posts = ref([]);
 const addPost = async (newPost) => {
     try {
         const createdPost = await createPost(newPost);
-        console.log('Created Post:', createdPost);
         posts.value.unshift(createdPost);
-        console.log('Updated Posts:', posts.value);
     } catch (error) {
         console.error('Failed to create post:', error);
     }
