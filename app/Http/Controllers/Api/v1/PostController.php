@@ -51,6 +51,8 @@ class PostController extends Controller
     public function store(StoreRequest $request)
     {
         $data = $request->validated();
+        $data['user_id'] = auth()->id();
+
         $post = Post::create($data);
 
         Cache::forget('posts_index');

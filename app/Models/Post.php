@@ -18,5 +18,11 @@ class Post extends Model
         'likes',
         'comments',
         'watches',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

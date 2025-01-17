@@ -1,35 +1,47 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_AUTH_URL = import.meta.env.VITE_AUTH_URL;
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
 });
 
+const authClient = axios.create({
+    baseURL: API_AUTH_URL,
+});
+
+apiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 apiClient.interceptors.response.use(
-    (response) => {
-        if (response.data) {
-            return { data: response.data };
-        }
-        return response;
-    },
-    (error) => {
+    (response) => response,
+    async (error) => {
         console.error('There was a problem with the fetch operation:', error);
         return Promise.reject(error);
     }
 );
 
-const getCachedData = (key) => {
-    const cachedData = localStorage.getItem(key);
-    if (cachedData) {
-        return JSON.parse(cachedData);
+authClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
     }
-    return null;
-};
+    return config;
+});
 
-const setCachedData = (key, data) => {
-    localStorage.setItem(key, JSON.stringify(data));
-};
+authClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        console.error('There was a problem with the auth request:', error);
+        return Promise.reject(error);
+    }
+);
 
 export const fetchPosts = async () => {
     const cacheKey = 'posts_data';

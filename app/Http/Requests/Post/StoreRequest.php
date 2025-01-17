@@ -11,7 +11,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -27,5 +27,12 @@ class StoreRequest extends FormRequest
             'file_type' => 'nullable|string',
             'file_url' => 'nullable|string',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'user_id' => auth()->id(),
+        ]);
     }
 }

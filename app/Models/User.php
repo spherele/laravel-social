@@ -23,6 +23,14 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role',
+        'about',
+        'avatar',
+        'location',
+        'company',
+        'skills',
+        'github',
+        'linkedin',
     ];
 
     /**
@@ -52,6 +60,16 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getAvatarAttribute($value): string
+    {
+        return $value ?? 'https://sun9-49.userapi.com/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg?quality=96&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360&sign=10ad7d7953daabb7b0e707fdfb7ebefd&u=I6EtahnrCRLlyd0MhT2raQt6ydhuyxX4s72EHGuUSoM&cs=200x200';
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 
     public function chats()

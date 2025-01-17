@@ -25,6 +25,7 @@ class PostResourse extends JsonResource
             'comments' => $this->comments_count,
             'watches' => $this->watches_count,
             'likes' => $this->likes,
+            'user_id' => auth()->id(),
         ];
     }
 }

@@ -27,17 +27,23 @@ Route::get('/news', function () {
 })->middleware(['auth', 'verified'])->name('news');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile', function () {
+        $userId = auth()->id();
+        return redirect()->route('profile.show', ['id' => $userId]);
+    })->name('profile.index');
+
     Route::get('/profile/settings', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/settings', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile/settings', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
 
-Route::middleware('auth')->group(function () {
     Route::get('/chats', [ChatsController::class, 'index'])->name('chats.index');
     Route::get('/chats/{chatId}/messages', [ChatsController::class, 'getMessages']);
     Route::post('/chats/{chatId}/messages', [ChatsController::class, 'sendMessage']);
     Route::post('/chats', [ChatsController::class, 'createChat']);
+
+
+    Route::get('/friends', [FriendsController::class, 'index'])->name('friends.index');
 });
 
 Route::middleware('auth')->group(function () {

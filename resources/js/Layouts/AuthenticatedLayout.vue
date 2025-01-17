@@ -48,7 +48,7 @@ watch(showingNavigationDropdown, (newValue) => {
                                 <NavLink :href="route('chats.index')" :active="route().current('chats.index')">
                                     Chats
                                 </NavLink>
-                                <NavLink :href="route('profile.index')" :active="route().current('profile.index')">
+                                <NavLink :href="route('profile.show', { id: $page.props.auth.user.id })" :active="route().current('profile.show')">
                                     Profile
                                 </NavLink>
                             </div>
@@ -83,7 +83,7 @@ watch(showingNavigationDropdown, (newValue) => {
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.index')"> Profile </DropdownLink>
+                                        <DropdownLink :href="route('profile.show', { id: $page.props.auth.user.id })"> Profile </DropdownLink>
                                         <DropdownLink :href="route('profile.edit')"> Settings </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out

@@ -6,6 +6,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
+import { router } from '@inertiajs/vue3';
 
 defineProps({
     canResetPassword: {
@@ -22,8 +24,77 @@ const form = useForm({
     remember: false,
 });
 
+// Функция для обновления токена
+const refreshToken = async () => {
+    try {
+        const response = await axios.post('/api/auth/refresh', {}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            },
+        });
+        localStorage.setItem('access_token', response.data.access_token);
+        return response.data.access_token;
+    } catch (error) {
+        console.error('Failed to refresh token:', error);
+        throw error;
+    }
+};
+
+axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const newToken = await refreshToken();
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                return axios(originalRequest);
+            } catch (refreshError) {
+                console.error('Failed to refresh token:', refreshError);
+                localStorage.removeItem('access_token');
+                router.visit('/login');
+                return Promise.reject(refreshError);
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+const login = () => {
+    axios.post('/api/auth/login', {
+        email: form.email,
+        password: form.password,
+    })
+        .then(response => {
+            localStorage.setItem('access_token', response.data.access_token);
+
+            return axios.post('/api/auth/me', {}, {
+                headers: {
+                    Authorization: `Bearer ${response.data.access_token}`,
+                },
+            });
+        })
+        .then(userResponse => {
+            const user = userResponse.data;
+            console.log('User data:', user);
+            router.visit('/news');
+        })
+        .catch(error => {
+            if (error.response && error.response.data.error) {
+                form.setError('email', error.response.data.error);
+            } else {
+                console.error('Login failed:', error);
+            }
+        });
+};
+
 const submit = () => {
     form.post(route('login'), {
+        onSuccess: () => login(),
         onFinish: () => form.reset('password'),
     });
 };
@@ -102,15 +173,15 @@ const submit = () => {
 </template>
 
 <style scope>
-    .super-last {
-        @media (max-width: 768px) {
-            flex-direction: column-reverse;
+.super-last {
+    @media (max-width: 768px) {
+        flex-direction: column-reverse;
+        width: 100%;
+        gap: 10px;
+        & > a, button {
             width: 100%;
-            gap: 10px;
-            & > a, button {
-                width: 100%;
-                margin: unset;
-            }
+            margin: unset;
         }
     }
+}
 </style>
