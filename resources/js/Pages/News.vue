@@ -2,9 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head} from '@inertiajs/vue3';
 import Post from "@/Components/Posts/Index.vue";
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import CreatePost from "@/Components/Posts/CreatePost.vue";
-import {createPost, fetchPosts} from "@/Services/api";
+import { createPost, fetchPosts } from "@/Services/api";
 
 const profile = ref({
     name: 'Sarah Anderson',
@@ -30,12 +30,28 @@ const addPost = async (newPost) => {
     }
 };
 
+const handlePostDeleted = (postId) => {
+    posts.value = posts.value.filter(post => post.id !== postId);
+};
 
 onMounted(async () => {
-    try {
-        posts.value = await fetchPosts();
-    } catch (error) {
-        console.error('Failed to fetch posts:', error);
+    const cacheKey = 'posts_data';
+    const cacheTimestampKey = 'posts_data_timestamp';
+    const cacheDuration = 10 * 60 * 1000;
+
+    const cachedData = localStorage.getItem(cacheKey);
+    const cachedTimestamp = localStorage.getItem(cacheTimestampKey);
+
+    if (cachedData && cachedTimestamp && Date.now() - cachedTimestamp < cacheDuration) {
+        posts.value = JSON.parse(cachedData);
+    } else {
+        try {
+            posts.value = await fetchPosts();
+            localStorage.setItem(cacheKey, JSON.stringify(posts.value));
+            localStorage.setItem(cacheTimestampKey, Date.now());
+        } catch (error) {
+            console.error('Failed to fetch posts:', error);
+        }
     }
 });
 
@@ -56,6 +72,7 @@ onMounted(async () => {
                         :key="post.id"
                         :post="post"
                         :profile="profile"
+                        @post-deleted="handlePostDeleted"
                     />
                 </div>
             </div>

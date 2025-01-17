@@ -155,7 +155,7 @@ const closeModal = () => {
                                 <h3 class="text-lg font-semibold mb-2">Skills & Expertise</h3>
                                 <div class="flex flex-wrap gap-2">
                                     <Badge v-for="skill in profile.skills" :key="skill" variant="secondary" class="text-sm">
-                                        {{ skill}}
+                                        {{ skill }}
                                     </Badge>
                                 </div>
                             </div>
