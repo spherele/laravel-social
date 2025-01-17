@@ -61,7 +61,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(News $post)
+    public function show(Post $post)
     {
         $cacheKey = 'post_' . $post->id;
         $cacheDuration = 600;
@@ -79,7 +79,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(News $post)
+    public function edit(Post $post)
     {
         //
     }
@@ -87,7 +87,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, News $post)
+    public function update(UpdateRequest $request, Post $post)
     {
         $data = $request->validated();
         $post->update($data);
@@ -102,7 +102,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(News $post)
+    public function destroy(Post $post)
     {
         if (!$post) {
             return response()->json([
